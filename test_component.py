@@ -120,9 +120,6 @@
 # for _ in range(4):
 #     frame = LabelFrame(right_frame, height=20)
 #     frame.pack(fill=tk.X, padx=5, pady=5)
-#     label = Label(frame, text="클릭하여 펼치기")
-#     label.pack()
-#     label.bind("<Button-1>", toggle_frame)
 #     var = IntVar()
 #     vars.append(var)
 #     checkbox = Checkbutton(frame, variable=var)
@@ -175,12 +172,15 @@
 
 import tkinter as tk
 
-def toggle_frame(frame_content, checkbox_var):
+def toggle_frame(frame_content):
     if frame_content.winfo_ismapped():
         frame_content.pack_forget()
     else:
         frame_content.pack(expand=True, fill='both')
-
+def update_group_checkboxes(group_var, checkboxes):
+    group_state = group_var.get()
+    for checkbox in checkboxes:
+        checkbox.set(group_state)
 root = tk.Tk()
 root.title("Accordion Example")
 
@@ -188,38 +188,42 @@ root.title("Accordion Example")
 checkbox_vars = {"video": [], "image": [], "audio": []}
 checkbox_labels = {"video": ["mp4", "mkv", "avi", "mov"], "image": ["png", "jpg", "gif"], "audio": ["mp3", "wav"]}
 
-def create_accordion_item(parent, text):
-    accordion_frame = tk.LabelFrame(parent, text=text, padx=10, pady=10)
-    accordion_frame.pack(expand=True, fill='both')
+def create_accordion(parent, text):
+    window = tk.Frame(parent)
+    window.pack(expand=True, fill='both', padx=10, pady=10)
+    header_frame = tk.Frame(window, borderwidth=1, relief="solid")
+    header_frame.pack(expand=True, fill='both')
 
-    toggle_button = tk.Button(accordion_frame, text="Toggle", command=lambda: toggle_frame(frame_content, checkbox_vars))
+    toggle_button = tk.Button(header_frame, text="Toggle", command=lambda: toggle_frame(frame_content))
     toggle_button.pack()
-    frame_content = tk.Frame(accordion_frame)
+
+    frame_content = tk.Frame(window, borderwidth=1, relief="solid")
     frame_content.pack(expand=True, fill='both')
 
     # 체크박스 상태를 저장하는 IntVar 생성
+    group_var = tk.IntVar()
     checkbox_vars[text] = [tk.IntVar() for _ in checkbox_labels[text]]
 
+    checkbox_vars[text] = [tk.IntVar() for _ in checkbox_labels[text]]
+
+    header_checkbox = tk.Checkbutton(header_frame, text=text, variable=group_var,
+                                     command=lambda: update_group_checkboxes(group_var, checkbox_vars[text]))
+    header_checkbox.pack()
     # 체크박스를 생성하고 frame_content에 배치
     for i, label in enumerate(checkbox_labels[text]):
         checkbox = tk.Checkbutton(frame_content, text=label, variable=checkbox_vars[text][i])
         checkbox.pack()
-    # checkbox = tk.Checkbutton(frame_content, text=f"Include {text.lower()} item", variable=checkbox_var)
-    # checkbox.pack()
 
-
-# 3개의 아코디언 아이템 생성
-# create_accordion_item(root, "Item #1")
-# create_accordion_item(root, "Item #2")
-# create_accordion_item(root, "Item #3")
 
 for key, val in checkbox_labels.items():
-    create_accordion_item(root, key)
+    create_accordion(root, key)
 
 # 체크박스 상태를 확인하는 버튼 생성
 def check_checkbox_state():
-    for i, checkbox_var in enumerate(checkbox_vars):
-        print(f"Checkbox {i+1}: {checkbox_var.get()}")
+    for key, var_list in checkbox_vars.items():
+        print(f"{key.capitalize()} checkboxes:")
+        for i, checkbox_var in enumerate(var_list):
+            print(f"  {checkbox_labels[key][i]}: {checkbox_var.get()}")
 
 check_button = tk.Button(root, text="Check Checkbox State", command=check_checkbox_state)
 check_button.pack()

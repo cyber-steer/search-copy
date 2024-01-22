@@ -47,13 +47,10 @@ right_frame = tk.Frame(window)
 right_frame.pack(side=tk.RIGHT, expand=True, fill=tk.BOTH)
 
 # 체크박스가 있는 Labelframe 네 개
-for _ in range(4):
-    frame = LabelFrame(right_frame)
-    frame.pack(fill=tk.X, padx=5, pady=5)
-    checkboxes = [tk.Checkbutton(frame) for _ in range(4)]
+check_title_frame = tk.Frame(window)
+check_title_frame.pack()
 
-    for checkbox in checkboxes:
-        checkbox.pack(side=tk.LEFT)
+
 
 
 

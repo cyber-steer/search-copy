@@ -170,62 +170,145 @@
 
 
 
+# import tkinter as tk
+#
+# def toggle_frame(frame_content):
+#     if frame_content.winfo_ismapped():
+#         frame_content.pack_forget()
+#     else:
+#         frame_content.pack(expand=True, fill='both')
+# def update_group_checkboxes(group_var, checkboxes):
+#     group_state = group_var.get()
+#     for checkbox in checkboxes:
+#         checkbox.set(group_state)
+# root = tk.Tk()
+# root.title("Accordion Example")
+#
+# # 체크박스 상태를 저장하는 변수들을 담을 리스트
+# checkbox_vars = {"video": [], "image": [], "audio": []}
+# checkbox_labels = {"video": ["mp4", "mkv", "avi", "mov"], "image": ["png", "jpg", "gif"], "audio": ["mp3", "wav"]}
+#
+# def create_accordion(parent, text):
+#     window = tk.Frame(parent)
+#     window.pack(expand=True, fill='both', padx=10, pady=10)
+#     header_frame = tk.Frame(window, borderwidth=1, relief="solid")
+#     header_frame.pack(expand=True, fill='both')
+#
+#     toggle_button = tk.Button(header_frame, text="Toggle", command=lambda: toggle_frame(frame_content))
+#     toggle_button.pack()
+#
+#     frame_content = tk.Frame(window, borderwidth=1, relief="solid")
+#     frame_content.pack(expand=True, fill='both')
+#
+#     # 체크박스 상태를 저장하는 IntVar 생성
+#     group_var = tk.IntVar()
+#     checkbox_vars[text] = [tk.IntVar() for _ in checkbox_labels[text]]
+#
+#     checkbox_vars[text] = [tk.IntVar() for _ in checkbox_labels[text]]
+#
+#     header_checkbox = tk.Checkbutton(header_frame, text=text, variable=group_var,
+#                                      command=lambda: update_group_checkboxes(group_var, checkbox_vars[text]))
+#     header_checkbox.pack()
+#     # 체크박스를 생성하고 frame_content에 배치
+#     for i, label in enumerate(checkbox_labels[text]):
+#         checkbox = tk.Checkbutton(frame_content, text=label, variable=checkbox_vars[text][i])
+#         checkbox.pack()
+#
+#
+# for key, val in checkbox_labels.items():
+#     create_accordion(root, key)
+#
+# # 체크박스 상태를 확인하는 버튼 생성
+# def check_checkbox_state():
+#     for key, var_list in checkbox_vars.items():
+#         print(f"{key.capitalize()} checkboxes:")
+#         for i, checkbox_var in enumerate(var_list):
+#             print(f"  {checkbox_labels[key][i]}: {checkbox_var.get()}")
+#
+# check_button = tk.Button(root, text="Check Checkbox State", command=check_checkbox_state)
+# check_button.pack()
+#
+# root.mainloop()
+
+
+
+
+# import tkinter as tk
+# from tkinter import ttk
+#
+# def on_mousewheel(event):
+#     # 마우스 휠 이벤트 처리
+#     if canvas.winfo_height() < inner_frame.winfo_reqheight():
+#         canvas.yview_scroll(int(-1*(event.delta/120)), "units")
+#
+# def on_configure(event):
+#     # 내부 Frame의 크기가 변경될 때 스크롤 영역 조정
+#     canvas.configure(scrollregion=canvas.bbox("all"))
+#
+# window = tk.Tk()
+# window.title("Scrollable Frame Example")
+# window.geometry("800x600")
+#
+# # 수직 스크롤바 생성
+# vsb = tk.Scrollbar(window, orient="vertical")
+# vsb.pack(side="right", fill="y")
+#
+# # 수평 스크롤바 생성
+# hsb = tk.Scrollbar(window, orient="horizontal")
+# hsb.pack(side="bottom", fill="x")
+#
+# # Canvas 생성
+# canvas = tk.Canvas(window, yscrollcommand=vsb.set, xscrollcommand=hsb.set)
+# canvas.pack(side="left", fill="both", expand=True)
+#
+# # 수직 스크롤바와 Canvas 연결
+# vsb.config(command=canvas.yview)
+#
+# # 수평 스크롤바와 Canvas 연결
+# hsb.config(command=canvas.xview)
+#
+# # 마우스 휠 이벤트 바인딩
+# canvas.bind_all("<MouseWheel>", on_mousewheel)
+#
+# # Frame 생성 (Canvas의 내용을 담는 역할)
+# inner_frame = ttk.Frame(canvas)
+# canvas.create_window((0, 0), window=inner_frame, anchor="nw")
+#
+# # 내부 Frame에 위젯들 추가
+# for i in range(30):
+#     label = ttk.Label(inner_frame, text=f"Label {i}")
+#     label.pack()
+#
+# # 내부 Frame의 크기가 변경될 때 스크롤 영역 조정
+# inner_frame.bind("<Configure>", on_configure)
+#
+# # Canvas의 스크롤 영역 설정
+# canvas.configure(scrollregion=canvas.bbox("all"))
+#
+# window.mainloop()
+
+
+
+
 import tkinter as tk
+from tkinter import ttk
 
-def toggle_frame(frame_content):
-    if frame_content.winfo_ismapped():
-        frame_content.pack_forget()
-    else:
-        frame_content.pack(expand=True, fill='both')
-def update_group_checkboxes(group_var, checkboxes):
-    group_state = group_var.get()
-    for checkbox in checkboxes:
-        checkbox.set(group_state)
-root = tk.Tk()
-root.title("Accordion Example")
+width = 800
+height = 600
 
-# 체크박스 상태를 저장하는 변수들을 담을 리스트
-checkbox_vars = {"video": [], "image": [], "audio": []}
-checkbox_labels = {"video": ["mp4", "mkv", "avi", "mov"], "image": ["png", "jpg", "gif"], "audio": ["mp3", "wav"]}
+window = tk.Tk()
+window.geometry(f'{width}x{height}')
 
-def create_accordion(parent, text):
-    window = tk.Frame(parent)
-    window.pack(expand=True, fill='both', padx=10, pady=10)
-    header_frame = tk.Frame(window, borderwidth=1, relief="solid")
-    header_frame.pack(expand=True, fill='both')
+# 왼쪽 창
+left_frame = tk.Frame(window, width=width // 2, height=height)
+left_frame.pack(side=tk.LEFT, expand=True, fill=tk.BOTH)
 
-    toggle_button = tk.Button(header_frame, text="Toggle", command=lambda: toggle_frame(frame_content))
-    toggle_button.pack()
+# 수직 선
+separator_frame = ttk.Frame(window, width=2, relief="groove")
+separator_frame.pack(side=tk.LEFT, fill="y")
 
-    frame_content = tk.Frame(window, borderwidth=1, relief="solid")
-    frame_content.pack(expand=True, fill='both')
+# 오른쪽 창
+right_frame = tk.Frame(window, width=width // 2, height=height)
+right_frame.pack(side=tk.LEFT, expand=True, fill=tk.BOTH)
 
-    # 체크박스 상태를 저장하는 IntVar 생성
-    group_var = tk.IntVar()
-    checkbox_vars[text] = [tk.IntVar() for _ in checkbox_labels[text]]
-
-    checkbox_vars[text] = [tk.IntVar() for _ in checkbox_labels[text]]
-
-    header_checkbox = tk.Checkbutton(header_frame, text=text, variable=group_var,
-                                     command=lambda: update_group_checkboxes(group_var, checkbox_vars[text]))
-    header_checkbox.pack()
-    # 체크박스를 생성하고 frame_content에 배치
-    for i, label in enumerate(checkbox_labels[text]):
-        checkbox = tk.Checkbutton(frame_content, text=label, variable=checkbox_vars[text][i])
-        checkbox.pack()
-
-
-for key, val in checkbox_labels.items():
-    create_accordion(root, key)
-
-# 체크박스 상태를 확인하는 버튼 생성
-def check_checkbox_state():
-    for key, var_list in checkbox_vars.items():
-        print(f"{key.capitalize()} checkboxes:")
-        for i, checkbox_var in enumerate(var_list):
-            print(f"  {checkbox_labels[key][i]}: {checkbox_var.get()}")
-
-check_button = tk.Button(root, text="Check Checkbox State", command=check_checkbox_state)
-check_button.pack()
-
-root.mainloop()
+window.mainloop()

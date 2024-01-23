@@ -93,6 +93,9 @@ separator_frame.pack(side=tk.LEFT, fill="y")
 
 # separator.grid(row=0, column=1)
 # Text, Button, Loading Bar, Button
+search_frame = tk.Frame(left_frame)
+search_frame.pack(fill=tk.BOTH, expand=True)
+
 text = tk.Entry(left_frame)
 text.pack(fill=tk.X, padx=5, pady=5)
 button1 = tk.Button(left_frame, text="Button")
@@ -106,28 +109,28 @@ button2.pack(fill=tk.X, padx=5, pady=5)
 right_frame = tk.Frame(window, width=width // 2, height=height)
 right_frame.pack(side=tk.LEFT, expand=True, fill=tk.BOTH)
 
-# # 수직 스크롤바 생성
-# vsb = tk.Scrollbar(right_frame, orient="vertical")
-# vsb.pack(side="right", fill="y")
-# # vsb.grid(row=0, column=3, sticky="ns")
-#
-# # Canvas 생성
-# canvas = tk.Canvas(right_frame, yscrollcommand=vsb.set, width=width / 2)
-# canvas.pack(side="left", fill="both", expand=True)
-# # canvas.grid(row=0, column=2)
-# # 수직 스크롤바와 Canvas 연결
-# vsb.config(command=canvas.yview)
-#
-# # 마우스 휠 이벤트 바인딩
-# canvas.bind_all("<MouseWheel>", on_mousewheel)
-#
-# # Frame 생성 (Canvas의 내용을 담는 역할)
-# inner_frame = ttk.Frame(canvas)
-# canvas.create_window((0, 0), window=inner_frame, anchor="nw")
-#
-# inner_frame.bind("<Configure>", on_configure)
-# canvas.configure(scrollregion=canvas.bbox("all"))
-# for key, val in checkbox_labels.items():
-#     create_accordion(inner_frame, key)
+# 수직 스크롤바 생성
+vsb = tk.Scrollbar(right_frame, orient="vertical")
+vsb.pack(side="right", fill="y")
+# vsb.grid(row=0, column=3, sticky="ns")
+
+# Canvas 생성
+canvas = tk.Canvas(right_frame, yscrollcommand=vsb.set, width=width / 2)
+canvas.pack(side="left", fill="both", expand=True)
+# canvas.grid(row=0, column=2)
+# 수직 스크롤바와 Canvas 연결
+vsb.config(command=canvas.yview)
+
+# 마우스 휠 이벤트 바인딩
+canvas.bind_all("<MouseWheel>", on_mousewheel)
+
+# Frame 생성 (Canvas의 내용을 담는 역할)
+inner_frame = ttk.Frame(canvas)
+canvas.create_window((0, 0), window=inner_frame, anchor="nw")
+
+inner_frame.bind("<Configure>", on_configure)
+canvas.configure(scrollregion=canvas.bbox("all"))
+for key, val in checkbox_labels.items():
+    create_accordion(inner_frame, key)
 
 window.mainloop()

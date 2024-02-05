@@ -29,33 +29,34 @@ def update_group_checkboxes(group_var, checkboxes):
     for checkbox in checkboxes:
         checkbox.set(group_state)
 
-
 def create_accordion(parent, text):
     window = tk.Frame(parent)
     window.pack(expand=True, fill='both', padx=10, pady=10)
     header_frame = tk.Frame(window, borderwidth=1, relief="solid")
     header_frame.pack(expand=True, fill='both')
 
-    toggle_button = tk.Button(header_frame, text="Toggle", command=lambda: toggle_frame(frame_content))
-    toggle_button.pack()
-
-    frame_content = tk.Frame(window, borderwidth=1, relief="solid")
-    frame_content.pack(expand=True, fill='both')
-
     # 체크박스 상태를 저장하는 IntVar 생성
     group_var = tk.IntVar()
     checkbox_vars[text] = [tk.IntVar() for _ in checkbox_labels[text]]
 
-    checkbox_vars[text] = [tk.IntVar() for _ in checkbox_labels[text]]
-
     header_checkbox = tk.Checkbutton(header_frame, text=text, variable=group_var,
                                      command=lambda: update_group_checkboxes(group_var, checkbox_vars[text]))
-    header_checkbox.pack()
+    header_checkbox.grid(row=0, column=0)  # 체크박스를 먼저 배치
+
+    toggle_button = tk.Button(header_frame, text="Toggle", command=lambda: toggle_frame(frame_content))
+    toggle_button.grid(row=0, column=1)  # 토글 버튼을 체크박스 뒤에 배치
+
+    frame_content = tk.Frame(window, borderwidth=1, relief="solid")
+    frame_content.pack(expand=True, fill='both')
+
     # 체크박스를 생성하고 frame_content에 배치
     for i, label in enumerate(checkbox_labels[text]):
         checkbox = tk.Checkbutton(frame_content, text=label, variable=checkbox_vars[text][i])
-        checkbox.pack()
+        checkbox.grid(row=0, column=i)  # 체크박스를 가로로 배치
 
+# 나머지 코드는 동일...
+
+# 나머지 코드는 동일...
 
 def get_directory_path(entry_var):
     path = filedialog.askdirectory()
@@ -122,7 +123,8 @@ canvas.pack(side="left", fill="both", expand=True)
 vsb.config(command=canvas.yview)
 
 # 마우스 휠 이벤트 바인딩
-canvas.bind_all("<MouseWheel>", on_mousewheel)
+canvas.bind("<MouseWheel>", on_mousewheel)
+log_text.bind("<MouseWheel>", lambda event: log_text.yview_scroll(int(-1 * (event.delta / 120)), "units"))
 
 # Frame 생성 (Canvas의 내용을 담는 역할)
 inner_frame = ttk.Frame(canvas)

@@ -1,9 +1,14 @@
+import json
 import tkinter as tk
 from tkinter import scrolledtext, LabelFrame, ttk, filedialog
 
+with open('extension.json', 'r') as f:
+    checkbox_labels = json.load(f)
+checkbox_vars = {}
 # 체크박스 상태를 저장하는 변수들을 담을 리스트
-checkbox_vars = {"video": [], "image": [], "audio": []}
-checkbox_labels = {"video": ["mp4", "mkv", "avi", "mov"], "image": ["png", "jpg", "gif"], "audio": ["mp3", "wav"]}
+for key in checkbox_labels.keys():
+    checkbox_vars[key] = []
+# checkbox_labels = {"video": ["mp4", "mkv", "avi", "mov"], "image": ["png", "jpg", "gif"], "audio": ["mp3", "wav"]}
 
 
 def on_mousewheel(event):
@@ -22,18 +27,22 @@ def toggle_frame(frame_content):
         frame_content.pack_forget()
     else:
         frame_content.pack(expand=True, fill='both')
-
-
+        frame_content.pack_propagate(False)
 def update_group_checkboxes(group_var, checkboxes):
     group_state = group_var.get()
     for checkbox in checkboxes:
         checkbox.set(group_state)
-
 def create_accordion(parent, text):
     window = tk.Frame(parent)
     window.pack(expand=True, fill='both', padx=10, pady=10)
+    # window.pack_propagate(False)
     header_frame = tk.Frame(window, borderwidth=1, relief="solid")
     header_frame.pack(expand=True, fill='both')
+
+
+    frame_content = tk.Frame(window, borderwidth=1, relief="solid")
+    frame_content.pack(expand=True, fill='both')
+    frame_content.pack_propagate(False)  # frame_content의 내용에 따라 크기가 조절되지 않도록 설정
 
     # 체크박스 상태를 저장하는 IntVar 생성
     group_var = tk.IntVar()
@@ -42,21 +51,29 @@ def create_accordion(parent, text):
     header_checkbox = tk.Checkbutton(header_frame, text=text, variable=group_var,
                                      command=lambda: update_group_checkboxes(group_var, checkbox_vars[text]))
     header_checkbox.grid(row=0, column=0)  # 체크박스를 먼저 배치
-
+    #
     toggle_button = tk.Button(header_frame, text="Toggle", command=lambda: toggle_frame(frame_content))
     toggle_button.grid(row=0, column=1)  # 토글 버튼을 체크박스 뒤에 배치
 
-    frame_content = tk.Frame(window, borderwidth=1, relief="solid")
-    frame_content.pack(expand=True, fill='both')
 
-    # 체크박스를 생성하고 frame_content에 배치
+    # # 체크박스를 생성하고 frame_content에 배치
+    # for i, label in enumerate(checkbox_labels[text]):
+    #     checkbox = tk.Checkbutton(frame_content, text=label, variable=checkbox_vars[text][i], width=5)
+    #     checkbox.grid(row=0, column=i)  # 체크박스를 가로로 배치
+    #     checkbox.pack_propagate(False)
+
+    num_columns = 5
     for i, label in enumerate(checkbox_labels[text]):
-        checkbox = tk.Checkbutton(frame_content, text=label, variable=checkbox_vars[text][i])
-        checkbox.grid(row=0, column=i)  # 체크박스를 가로로 배치
+        row = i // num_columns
+        col = i % num_columns
+        checkbox = tk.Checkbutton(frame_content, text=label, variable=checkbox_vars[text][i], width=7)
+        checkbox.grid(row=row, column=col, padx=5, pady=5)  # padx, pady 값으로 간격 조절
 
-# 나머지 코드는 동일...
+        # 추가 설정
+        checkbox.pack_propagate(False)
 
-# 나머지 코드는 동일...
+        frame_content.pack_forget()
+
 
 def get_directory_path(entry_var):
     path = filedialog.askdirectory()

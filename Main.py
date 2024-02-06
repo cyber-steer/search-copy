@@ -33,16 +33,19 @@ def update_group_checkboxes(group_var, checkboxes):
     for checkbox in checkboxes:
         checkbox.set(group_state)
 def create_accordion(parent, text):
-    window = tk.Frame(parent)
-    window.pack(expand=True, fill='both', padx=10, pady=10)
+    window = tk.Frame(parent, borderwidth=1, relief="solid", width=1000)
+    window.pack(expand=True, fill='x', padx=10, pady=10)
+    window.bind("<MouseWheel>", on_mousewheel)
     # window.pack_propagate(False)
     header_frame = tk.Frame(window, borderwidth=1, relief="solid")
-    header_frame.pack(expand=True, fill='both')
+    header_frame.pack(expand=True, fill='x')
+    header_frame.bind("<MouseWheel>", on_mousewheel)
 
 
     frame_content = tk.Frame(window, borderwidth=1, relief="solid")
     frame_content.pack(expand=True, fill='both')
     frame_content.pack_propagate(False)  # frame_content의 내용에 따라 크기가 조절되지 않도록 설정
+    frame_content.bind("<MouseWheel>", on_mousewheel)
 
     # 체크박스 상태를 저장하는 IntVar 생성
     group_var = tk.IntVar()
@@ -51,9 +54,11 @@ def create_accordion(parent, text):
     header_checkbox = tk.Checkbutton(header_frame, text=text, variable=group_var,
                                      command=lambda: update_group_checkboxes(group_var, checkbox_vars[text]))
     header_checkbox.grid(row=0, column=0)  # 체크박스를 먼저 배치
+    header_checkbox.bind("<MouseWheel>", on_mousewheel)
     #
     toggle_button = tk.Button(header_frame, text="Toggle", command=lambda: toggle_frame(frame_content))
     toggle_button.grid(row=0, column=1)  # 토글 버튼을 체크박스 뒤에 배치
+    toggle_button.bind("<MouseWheel>", on_mousewheel)
 
 
     # # 체크박스를 생성하고 frame_content에 배치
@@ -62,15 +67,16 @@ def create_accordion(parent, text):
     #     checkbox.grid(row=0, column=i)  # 체크박스를 가로로 배치
     #     checkbox.pack_propagate(False)
 
-    num_columns = 5
+    num_columns = 6
     for i, label in enumerate(checkbox_labels[text]):
         row = i // num_columns
         col = i % num_columns
-        checkbox = tk.Checkbutton(frame_content, text=label, variable=checkbox_vars[text][i], width=7)
-        checkbox.grid(row=row, column=col, padx=5, pady=5)  # padx, pady 값으로 간격 조절
+        checkbox = tk.Checkbutton(frame_content, text=label, variable=checkbox_vars[text][i], width=5, borderwidth=1, relief="solid")
+        checkbox.grid(row=row, column=col, padx=5, pady=5, sticky="w")  # padx, pady 값으로 간격 조절
 
         # 추가 설정
         checkbox.pack_propagate(False)
+        checkbox.bind("<MouseWheel>", on_mousewheel)
 
         frame_content.pack_forget()
 
@@ -123,32 +129,41 @@ loading_bar.pack(fill=tk.X, padx=5, pady=5)
 button2 = tk.Button(left_frame, text="Button")
 button2.pack(fill=tk.X, padx=5, pady=5)
 
+def on_inner_frame_mousewheel(event):
+    inner_frame.yview_scroll(int(-1 * (event.delta / 120)), "units")
+    canvas.yview_scroll(int(-1 * (event.delta / 120)), "units")  # canvas에 전달
+
+
 # 오른쪽 창
 right_frame = tk.Frame(window, width=width // 2, height=height)
 right_frame.pack(side=tk.LEFT, expand=True, fill=tk.BOTH)
 
 # 수직 스크롤바 생성
-vsb = tk.Scrollbar(right_frame, orient="vertical")
-vsb.pack(side="right", fill="y")
-# vsb.grid(row=0, column=3, sticky="ns")
+scrollbar = tk.Scrollbar(right_frame, orient="vertical")
+scrollbar.pack(side="right", fill="y")
 
 # Canvas 생성
-canvas = tk.Canvas(right_frame, yscrollcommand=vsb.set, width=width / 2)
+canvas = tk.Canvas(right_frame, yscrollcommand=scrollbar.set, width=width / 2)
 canvas.pack(side="left", fill="both", expand=True)
-# canvas.grid(row=0, column=2)
-# 수직 스크롤바와 Canvas 연결
-vsb.config(command=canvas.yview)
 
-# 마우스 휠 이벤트 바인딩
-canvas.bind("<MouseWheel>", on_mousewheel)
-log_text.bind("<MouseWheel>", lambda event: log_text.yview_scroll(int(-1 * (event.delta / 120)), "units"))
+# 수직 스크롤바와 Canvas 연결
+scrollbar.config(command=canvas.yview)
 
 # Frame 생성 (Canvas의 내용을 담는 역할)
-inner_frame = ttk.Frame(canvas)
-canvas.create_window((0, 0), window=inner_frame, anchor="nw")
+inner_frame = ttk.Frame(canvas, borderwidth=1, relief="solid")
+
+# Place the inner_frame inside the Canvas
+canvas.create_window((0, 0), window=inner_frame, anchor="nw", width=width / 2-20)
+
+# inner_frame에서의 마우스 휠 이벤트 바인딩
+inner_frame.bind("<MouseWheel>", on_mousewheel)
+
+# Canvas 위에서의 마우스 휠 이벤트 바인딩
+canvas.bind("<MouseWheel>", on_mousewheel)
 
 inner_frame.bind("<Configure>", on_configure)
-canvas.configure(scrollregion=canvas.bbox("all"))
+
+# inner_frame에 내용 추가
 for key, val in checkbox_labels.items():
     create_accordion(inner_frame, key)
 

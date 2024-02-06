@@ -1,3 +1,11 @@
+import json
+
+with open('extension.json', 'r') as f:
+    checkbox_labels = json.load(f)
+checkbox_vars = {}
+# 체크박스 상태를 저장하는 변수들을 담을 리스트
+for key in checkbox_labels.keys():
+    checkbox_vars[key] = []
 # import tkinter as tk
 # from tkinter import filedialog
 #
@@ -316,53 +324,53 @@
 
 
 
-import tkinter as tk
-from tkinter import ttk
-
-def create_loading_bar_frame(parent):
-    frame = tk.Frame(parent)
-    loading_bar = ttk.Progressbar(frame, mode='indeterminate')
-    loading_bar.pack(side=tk.LEFT, padx=5, pady=5)
-    return frame
-
-width = 1000
-height = 600
-
-window = tk.Tk()
-window.geometry(f'{width}x{height}')
-
-# 좌측 상단
-top_left_frame = tk.Frame(window, width=width // 2, height=height // 2)
-top_left_frame.pack(side=tk.LEFT, anchor=tk.NW)
-
-# '?' 텍스트 표시
-question_label = tk.Label(top_left_frame, text="?/?")
-question_label.pack(side=tk.LEFT, padx=5, pady=5)
-
-# 우측 상단
-top_right_frame = tk.Frame(window, width=width // 2, height=height // 2)
-top_right_frame.pack(side=tk.RIGHT, anchor=tk.NE)
-
-# 버튼 추가
-button_top_right = tk.Button(top_right_frame, text="Button")
-button_top_right.pack(side=tk.RIGHT, padx=5, pady=5)
-
-# 좌측 하단
-bottom_left_frame = tk.Frame(window, width=width // 2, height=height // 2)
-bottom_left_frame.pack(side=tk.LEFT, anchor=tk.SW)
-
-# 로딩바 추가
-loading_bar_frame_bottom_left = create_loading_bar_frame(bottom_left_frame)
-
-# 우측 하단
-bottom_right_frame = tk.Frame(window, width=width // 2, height=height // 2)
-bottom_right_frame.pack(side=tk.RIGHT, anchor=tk.SE)
-
-# 로딩바 추가
-loading_bar_frame_bottom_right = create_loading_bar_frame(bottom_right_frame)
-
-# 버튼 추가
-button_bottom_right = tk.Button(bottom_right_frame, text="Button")
-button_bottom_right.pack(side=tk.RIGHT, padx=5, pady=5)
-
-window.mainloop()
+# import tkinter as tk
+# from tkinter import ttk
+#
+# def create_loading_bar_frame(parent):
+#     frame = tk.Frame(parent)
+#     loading_bar = ttk.Progressbar(frame, mode='indeterminate')
+#     loading_bar.pack(side=tk.LEFT, padx=5, pady=5)
+#     return frame
+#
+# width = 1000
+# height = 600
+#
+# window = tk.Tk()
+# window.geometry(f'{width}x{height}')
+#
+# # 좌측 상단
+# top_left_frame = tk.Frame(window, width=width // 2, height=height // 2)
+# top_left_frame.pack(side=tk.LEFT, anchor=tk.NW)
+#
+# # '?' 텍스트 표시
+# question_label = tk.Label(top_left_frame, text="?/?")
+# question_label.pack(side=tk.LEFT, padx=5, pady=5)
+#
+# # 우측 상단
+# top_right_frame = tk.Frame(window, width=width // 2, height=height // 2)
+# top_right_frame.pack(side=tk.RIGHT, anchor=tk.NE)
+#
+# # 버튼 추가
+# button_top_right = tk.Button(top_right_frame, text="Button")
+# button_top_right.pack(side=tk.RIGHT, padx=5, pady=5)
+#
+# # 좌측 하단
+# bottom_left_frame = tk.Frame(window, width=width // 2, height=height // 2)
+# bottom_left_frame.pack(side=tk.LEFT, anchor=tk.SW)
+#
+# # 로딩바 추가
+# loading_bar_frame_bottom_left = create_loading_bar_frame(bottom_left_frame)
+#
+# # 우측 하단
+# bottom_right_frame = tk.Frame(window, width=width // 2, height=height // 2)
+# bottom_right_frame.pack(side=tk.RIGHT, anchor=tk.SE)
+#
+# # 로딩바 추가
+# loading_bar_frame_bottom_right = create_loading_bar_frame(bottom_right_frame)
+#
+# # 버튼 추가
+# button_bottom_right = tk.Button(bottom_right_frame, text="Button")
+# button_bottom_right.pack(side=tk.RIGHT, padx=5, pady=5)
+#
+# window.mainloop()

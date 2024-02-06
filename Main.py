@@ -2,7 +2,7 @@ import json
 import tkinter as tk
 from tkinter import scrolledtext, LabelFrame, ttk, filedialog
 
-with open('extension.json', 'r') as f:
+with open('extension.json', 'r', encoding='utf-8') as f:
     checkbox_labels = json.load(f)
 checkbox_vars = {}
 # 체크박스 상태를 저장하는 변수들을 담을 리스트
@@ -129,9 +129,6 @@ loading_bar.pack(fill=tk.X, padx=5, pady=5)
 button2 = tk.Button(left_frame, text="Button")
 button2.pack(fill=tk.X, padx=5, pady=5)
 
-def on_inner_frame_mousewheel(event):
-    inner_frame.yview_scroll(int(-1 * (event.delta / 120)), "units")
-    canvas.yview_scroll(int(-1 * (event.delta / 120)), "units")  # canvas에 전달
 
 
 # 오른쪽 창

@@ -6,13 +6,14 @@ class GUI_component:
     def __init__(self, extension_path, width=1000, height=600):
         self.width = width
         self.height = height
-        self.search_path_var = ""
-        self.copy_path_var=""
+        self.search_path_var = None
+        self.copy_path_var = None
         self.checkbox_labels = self.get_extension(extension_path)
         self.checkbox_vars = self.get_extension_labels(self.checkbox_labels)
 
 
         self.window = tk.Tk()
+        self.window.title("검색 및 복사")
         self.window.geometry(f'{width}x{height}')
 
         self.left_component()
@@ -34,20 +35,31 @@ class GUI_component:
             labelframe.pack(fill=tk.X, padx=20, pady=5, ipadx=10, ipady=10)
             entry = tk.Entry(labelframe, textvariable=entry_var)
             entry.pack(side=tk.LEFT, fill=tk.X, expand=True, padx=10)
-            button = tk.Button(labelframe, text="browse...", command=lambda var=entry_var: get_directory_path(var))
+            button = tk.Button(labelframe, text="browse...", command=lambda var=entry_var: self.get_directory_path(var))
             button.pack(side=tk.LEFT, padx=10)
-        log_text = scrolledtext.ScrolledText(left_frame, wrap="none", width=1, height=1)
+
+        log_frame = tk.Frame(left_frame, height=self.height-250)
+        log_frame.pack_propagate(0)
+        log_frame.pack(fill="both")
+        log_text = scrolledtext.ScrolledText(log_frame, wrap="none", width=1)
         log_text.pack(fill=tk.BOTH, expand=True, padx=5, pady=5)
-        search_frame = tk.Frame(left_frame)
-        search_frame.pack(fill=tk.BOTH, expand=True)
-        text = tk.Entry(left_frame)
-        text.pack(fill=tk.X, padx=5, pady=5)
-        button1 = tk.Button(left_frame, text="Button")
-        button1.pack(fill=tk.X, padx=5, pady=5)
-        loading_bar = ttk.Progressbar(left_frame, mode='indeterminate')
-        loading_bar.pack(fill=tk.X, padx=5, pady=5)
-        button2 = tk.Button(left_frame, text="Button")
-        button2.pack(fill=tk.X, padx=5, pady=5)
+
+        result_frame = tk.Frame(left_frame)
+        result_frame.pack(side="bottom", fill=tk.BOTH, expand=True)
+        search_frame = tk.Frame(result_frame)
+        search_frame.pack(fill="x")
+        copy_frame = tk.Frame(result_frame)
+        copy_frame.pack(fill="x", pady=10)
+
+        count_label = tk.Label(search_frame, text=" / ")
+        count_label.pack(side="left", fill=tk.BOTH, padx=5, pady=5)
+        search_button = tk.Button(search_frame, text="검색")
+        search_button.pack(side="right", fill=tk.BOTH, padx=5, pady=5, ipadx=10, ipady=5)
+
+        loading_bar = ttk.Progressbar(copy_frame, mode='indeterminate')
+        loading_bar.pack(side="left", fill=tk.X, expand=True, padx=5, pady=5)
+        copy_button = tk.Button(copy_frame, text="복사")
+        copy_button.pack(side="right", fill=tk.BOTH, padx=5, pady=5, ipadx=10, ipady=5)
 
     def right_component(self):
 
@@ -59,6 +71,13 @@ class GUI_component:
         scrollbar = tk.Scrollbar(right_frame, orient="vertical")
         scrollbar.pack(side="right", fill="y")
 
+        search_extension_frame = tk.Frame(right_frame)
+        search_extension_frame.pack(fill="x")
+        search_extension_label = tk.Label(search_extension_frame, text="추가 지정( , ):")
+        search_extension_label.pack(side="left", fill="both")
+        search_extension_entry = tk.Entry(search_extension_frame)
+        search_extension_entry.pack(side="left", fill="both", expand=True, padx=(5,10))
+
         # Canvas 생성
         self.canvas = tk.Canvas(right_frame, yscrollcommand=scrollbar.set, width=self.width / 2)
         self.canvas.pack(side="left", fill="both", expand=True)
@@ -67,7 +86,7 @@ class GUI_component:
         scrollbar.config(command=self.canvas.yview)
 
         # Frame 생성 (Canvas의 내용을 담는 역할)
-        self.inner_frame = ttk.Frame(self.canvas, borderwidth=1, relief="solid")
+        self.inner_frame = ttk.Frame(self.canvas)
 
         # Place the inner_frame inside the Canvas
         self.canvas.create_window((0, 0), window=self.inner_frame, anchor="nw", width=self.width / 2 - 20)
@@ -84,11 +103,7 @@ class GUI_component:
         for key, val in self.checkbox_labels.items():
             self.create_accordion(self.inner_frame, key)
 
-
-
-
-
-
+#========================================================================================
     def get_extension_labels(self, data):
         labels = {}
         for key in data.keys():
@@ -99,7 +114,7 @@ class GUI_component:
             data = json.load(f)
         return data
 
-    def get_directory_path(entry_var):
+    def get_directory_path(self, entry_var):
         path = filedialog.askdirectory()
         entry_var.set(path)
     def on_mousewheel(self, event):
@@ -111,25 +126,26 @@ class GUI_component:
         # 내부 Frame의 크기가 변경될 때 스크롤 영역 조정
         self.canvas.configure(scrollregion=self.canvas.bbox("all"))
 
-    def toggle_frame(self, frame_content):
+    def toggle_frame(self, frame_content, toggle_button):
         if frame_content.winfo_ismapped():
             frame_content.pack_forget()
+            toggle_button["text"] = "펼침"
         else:
             frame_content.pack(expand=True, fill='both')
             frame_content.pack_propagate(False)
-
+            toggle_button["text"] = "접기"
     def update_group_checkboxes(self, group_var, checkboxes):
         group_state = group_var.get()
         for checkbox in checkboxes:
             checkbox.set(group_state)
 
     def create_accordion(self, parent, text):
-        window = tk.Frame(parent, borderwidth=1, relief="solid", width=1000)
+        window = tk.Frame(parent)
         window.pack(expand=True, fill='x', padx=10, pady=10)
         window.bind("<MouseWheel>", self.on_mousewheel)
         # window.pack_propagate(False)
         header_frame = tk.Frame(window, borderwidth=1, relief="solid")
-        header_frame.pack(expand=True, fill='x')
+        header_frame.pack(expand=True, fill='x', ipadx=10, ipady=5)
         header_frame.bind("<MouseWheel>", self.on_mousewheel)
 
         frame_content = tk.Frame(window, borderwidth=1, relief="solid")
@@ -143,25 +159,18 @@ class GUI_component:
 
         header_checkbox = tk.Checkbutton(header_frame, text=text, variable=group_var,
                                          command=lambda: self.update_group_checkboxes(group_var, self.checkbox_vars[text]))
-        header_checkbox.grid(row=0, column=0)  # 체크박스를 먼저 배치
+        header_checkbox.pack(side="left")  # 체크박스를 먼저 배치
         header_checkbox.bind("<MouseWheel>", self.on_mousewheel)
         #
-        toggle_button = tk.Button(header_frame, text="Toggle", command=lambda: self.toggle_frame(frame_content))
-        toggle_button.grid(row=0, column=1)  # 토글 버튼을 체크박스 뒤에 배치
+        toggle_button = tk.Button(header_frame, text="펼침", command=lambda: self.toggle_frame(frame_content, toggle_button))
+        toggle_button.pack(side="right", padx=10, ipadx=10, ipady=5)  # 토글 버튼을 체크박스 뒤에 배치
         toggle_button.bind("<MouseWheel>", self.on_mousewheel)
-
-        # # 체크박스를 생성하고 frame_content에 배치
-        # for i, label in enumerate(checkbox_labels[text]):
-        #     checkbox = tk.Checkbutton(frame_content, text=label, variable=checkbox_vars[text][i], width=5)
-        #     checkbox.grid(row=0, column=i)  # 체크박스를 가로로 배치
-        #     checkbox.pack_propagate(False)
 
         num_columns = 6
         for i, label in enumerate(self.checkbox_labels[text]):
             row = i // num_columns
             col = i % num_columns
-            checkbox = tk.Checkbutton(frame_content, text=label, variable=self.checkbox_vars[text][i], width=5,
-                                      borderwidth=1, relief="solid")
+            checkbox = tk.Checkbutton(frame_content, text=label, variable=self.checkbox_vars[text][i], width=5,)
             checkbox.grid(row=row, column=col, padx=5, pady=5, sticky="w")  # padx, pady 값으로 간격 조절
 
             # 추가 설정
@@ -172,4 +181,4 @@ class GUI_component:
 
 
 if __name__ == "__main__":
-    app = GUI_component("extension.json", 800, 1000)
+    app = GUI_component("extension.json", 1000, 800)

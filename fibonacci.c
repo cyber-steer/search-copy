@@ -1,5 +1,7 @@
 #include <Python.h>
 
+int fibonacci_logic(int n);
+
 static PyObject* fibonacci(PyObject* self, PyObject* args) {
     int n;
 
@@ -7,24 +9,23 @@ static PyObject* fibonacci(PyObject* self, PyObject* args) {
         return NULL;
     }
 
-    int a = 0, b = 1, temp;
+    return Py_BuildValue("i", fibonacci_logic(n));
+}
 
-    while (n > 0) {
-        temp = a;
-        a = b;
-        b = temp + b;
-        n--;
+int fibonacci_logic(int n) {
+    if (n <= 1) {
+        return n;
+    } else {
+        return fibonacci_logic(n - 1) + fibonacci_logic(n - 2);
     }
-
-    return Py_BuildValue("i", a);
 }
 
 static PyMethodDef FibonacciMethods[] = {
-    {"fibonacci", fibonacci, METH_VARARGS, "Calculate the Fibonacci number."},
+    {"fibonacci", fibonacci, METH_VARARGS, "Calculate the Fibonacci number recursively."},
     {NULL, NULL, 0, NULL}
 };
 
-static struct PyModuleDef fibonaccimodule = {
+static struct PyModuleDef fibonacciModule = {
     PyModuleDef_HEAD_INIT,
     "fibonacci",
     NULL,
@@ -33,5 +34,5 @@ static struct PyModuleDef fibonaccimodule = {
 };
 
 PyMODINIT_FUNC PyInit_fibonacci(void) {
-    return PyModule_Create(&fibonaccimodule);
+    return PyModule_Create(&fibonacciModule);
 }

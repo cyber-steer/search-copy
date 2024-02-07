@@ -9,14 +9,16 @@ def fibonacci_py(n):
     else:
         return fibonacci_py(n - 1) + fibonacci_py(n - 2)
 
-n = 40
+n = 10
+print()
 
-start_time = time.time()
-print(fibonacci_py(n))
-end_time = time.time()
-print("python:", end_time - start_time, "seconds")
+start_time = time.perf_counter()
+print("C result:", fibonacci.fibonacci(n))
+end_time = time.perf_counter()
+print(f"C: {(end_time - start_time) * 1000: .5f} ms")
+print()
 
-start_time = time.time()
-print(fibonacci.fibonacci(n))
-end_time = time.time()
-print("C:", end_time - start_time, "seconds")
+start_time = time.perf_counter()
+print("python result:", fibonacci_py(n))
+end_time = time.perf_counter()
+print(f"python: {(end_time - start_time) * 1000: .5f} ms")
